@@ -17,9 +17,10 @@ int main()
     Stack<const char>* charStack{new Stack<const char>};
 
     // input string
-    std::string inputStr = "(a+a)$";
-
-
+    std::string inputStr1 = "(a+a)*a$";
+    std::string inputStr2 = "a*(a/a)$";
+    std::string inputStr3 = "a(a+a)$";
+    
     // stack implementation
     /**
      * PUSH $ TO STACK ALWAYS
@@ -32,8 +33,11 @@ int main()
      *          POP TOP OF STACK
      *          USE POPPED ELEMENT AND FIRST CHAR OF INPUT AS KEYS TO FIND SYMBOL ON PARSE TABLE
      *          PUSH THE CHARS OF THE PARSE TABLE ***BACKWARDS*** ONTO THE STACK
+     *      OUTPUT CURRENT STACK
      * 
-     * note: i do not know the fail condition right now, pls msg me if you have any questions about the stack or parse table class, much love
+     * note: i do not know the fail condition right now, pls msg me if you have any questions about 
+     * the stack or parse table class, i also do not claim to have the comment implementation completely
+     * correct, much love
     */
 
     // free allocated memory

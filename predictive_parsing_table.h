@@ -38,7 +38,7 @@ public:
      * @param cols Number of columns of the parse table
      * @param values Const std::vector of const std::string objects where 
      * these elements are ordered from left to right and top to bottom;
-     * do not include element (0,0); for empty elements, use NULL
+     * do not include element (0,0); for empty elements, use ""
     */
     PredictiveParsingTable(
         const size_t rows, 

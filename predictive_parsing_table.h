@@ -5,9 +5,9 @@
 #ifndef PREDICTIVE_PARSING_TABLE_H
 #define PREDICTIVE_PARSING_TABLE_H
 
-#define COLS_KEY const std::string&
-#define ROWS_KEY const std::string&
-#define VALUE_SYMBOL const std::string&
+#define COLS_KEY const std::string
+#define ROWS_KEY const std::string
+#define VALUE_SYMBOL const std::string
 #define PARSE_MAP std::map<std::pair<COLS_KEY,ROWS_KEY>,VALUE_SYMBOL>
 
 struct KeyDoesNotExist : public std::runtime_error
@@ -43,7 +43,7 @@ public:
     PredictiveParsingTable(
         const size_t rows, 
         const size_t cols,
-        const std::vector<const std::string&>& stringList) 
+        const std::vector<const std::string>& stringList) 
         : rows{rows}, cols{cols}
     {
         createMap();
@@ -79,7 +79,7 @@ private:
         parse_map = new PARSE_MAP;
     }
 
-    void implementParseTable(const std::vector<const std::string&>& stringList) {
+    void implementParseTable(const std::vector<const std::string>& stringList) {
         if (stringList.size() > ((rows * cols)-1))
             throw TooManyStringObjectsError();
 
@@ -90,7 +90,7 @@ private:
             for (size_t c = 1; c < cols; ++c) {
             parse_map->insert(std::make_pair(
                 std::make_pair(
-                    stringList[c], 
+                    stringList[c - 1], 
                     stringList[r * cols - 1]), 
                 stringList[r * cols - 1 + c])
             );

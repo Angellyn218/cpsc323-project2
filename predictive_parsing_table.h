@@ -5,6 +5,7 @@
 #ifndef PREDICTIVE_PARSING_TABLE_H
 #define PREDICTIVE_PARSING_TABLE_H
 
+// definitions for easy reading of code
 #define COLS_KEY const std::string
 #define ROWS_KEY const std::string
 #define VALUE_SYMBOL const std::string
@@ -50,7 +51,9 @@ public:
         implementParseTable(stringList);
     }
 
+    // destructor
     ~PredictiveParsingTable() {
+        // free allocated space
         delete parse_map;
     }
 
@@ -63,29 +66,33 @@ public:
     */
     VALUE_SYMBOL getSymbolAt(const std::string& col_key, const std::string& row_key) const {
         try {
+            // from parse_map map, use the given strings to form a pair and use as key to return the symbol value
             return parse_map->at(std::make_pair(col_key, row_key));
         } 
         catch (...) {
+            // if user tries to provide a col_key or row_key that does not exist, throw error
             throw KeyDoesNotExist();
         }
     }
 
 private:
-    size_t rows;
-    size_t cols;
+    size_t rows; // number of rows for the parse table
+    size_t cols; // number of cols for the parse table
     std::map<std::pair<COLS_KEY,ROWS_KEY>,VALUE_SYMBOL>* parse_map;
 
+    // create parse_map object for ptr
     void createMap() {
         parse_map = new PARSE_MAP;
     }
 
     void implementParseTable(const std::vector<const std::string>& stringList) {
+        // if given rows and cols does not match size of given parseList, throw error
         if (stringList.size() > ((rows * cols)-1))
             throw TooManyStringObjectsError();
-
         if (stringList.size() < ((rows * cols)-1))
             throw TooLittleStringObjectsError();
 
+        // for each symbol, create a key pair of col and row for easy access
         for (size_t r = 1; r < rows; ++r) {
             for (size_t c = 1; c < cols; ++c) {
             parse_map->insert(std::make_pair(

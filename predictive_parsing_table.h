@@ -45,7 +45,7 @@ public:
         const size_t rows, 
         const size_t cols,
         const std::vector<const std::string>& stringList) 
-        : rows{rows}, cols{cols}
+        : rows{rows}, cols{cols}, startSymbol{stringList[cols-1]}
     {
         createMap();
         implementParseTable(stringList);
@@ -58,7 +58,15 @@ public:
     }
 
     /**
-     * Grab symbol of parse table at indicated position
+     * Grab and return start symbol
+     * assumed to be (0,1) of parse table
+    */
+    ROWS_KEY getStartSymbol() const {
+        return startSymbol;
+    }
+
+    /**
+     * Grab and return symbol of parse table at indicated position
      * 
      * @param col_key Column key string symbol
      * @param row_key Row key string symbol
@@ -76,15 +84,17 @@ public:
     }
 
 private:
-    size_t rows; // number of rows for the parse table
-    size_t cols; // number of cols for the parse table
+    const size_t rows; // number of rows for the parse table
+    const size_t cols; // number of cols for the parse table
     std::map<std::pair<COLS_KEY,ROWS_KEY>,VALUE_SYMBOL>* parse_map;
+    ROWS_KEY startSymbol;
 
     // create parse_map object for ptr
     void createMap() {
         parse_map = new PARSE_MAP;
     }
 
+    // map the parse table to the parse_map object
     void implementParseTable(const std::vector<const std::string>& stringList) {
         // if given rows and cols does not match size of given parseList, throw error
         if (stringList.size() > ((rows * cols)-1))

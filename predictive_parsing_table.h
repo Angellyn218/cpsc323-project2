@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <map>
+#include <list>
 
 #ifndef PREDICTIVE_PARSING_TABLE_H
 #define PREDICTIVE_PARSING_TABLE_H
@@ -24,16 +25,17 @@ public:
      * 
      * @param rows Number of rows of the parse table
      * @param cols Number of columns of the parse table
-     * @param values List of string objects where elements are ordered from LEFT to RIGHT and TOP to BOTTOM
+     * @param values Const std::list of const std::string objects where 
+     * these elements are ordered from LEFT to RIGHT and TOP to BOTTOM
     */
     PredictiveParsingTable(
         const int rows, 
         const int cols,
-        const std::string& values) 
+        const std::list<const std::string&>& stringList) 
         : rows{rows}, cols{cols}
     {
         createMap();
-        implementMap();
+        implementParseTable(stringList);
     }
 
     ~PredictiveParsingTable() {
@@ -43,13 +45,13 @@ public:
 private:
     int rows;
     int cols;
-    std::map<std::string&, std::string&>* parseTable;
+    std::map<const std::string&, const std::string&>* parseTable;
 
-    static void createMap() {
-
+    void createMap() {
+        parseTable = new std::map<const std::string&, const std::string&>;
     }
 
-    static void implementMap() {
+    void implementParseTable(const std::list<const std::string&>& stringList) {
 
     }
 

@@ -1,51 +1,57 @@
 #include <stdexcept>
+#include <string>
+#include <sstream>
 
 #ifndef STACK_H
 #define STACK_H
 
-struct FullStackError : public std::runtime_error
+template<typename S>
+struct Node
 {
-    FullStackError() : std::runtime_error("invalid operation on a full stack") {}
-    FullStackError(const std::string& msg) : std::runtime_error(msg) {}
-};
+    S item;
+    Node<S>* next{nullptr};
+}; // end node
 
-struct EmptyStackError : public std::runtime_error
-{
-    EmptyStackError() : std::runtime_error("invalid operation on an empty stack") {}
-    EmptyStackError(const std::string& msg) : std::runtime_error(msg) {}
-};
-
-template<typename T, size_t S>
-class Stack 
+template<typename T>
+class Stack
 {
 public:
-    // bool empty() Returns true if stack is empty or false otherwise
-    bool empty() { return top == 0; }
+    ~Stack() { while(!empty()) pop(); }
 
-    // void push(T item) Adds item at top of the stack or throws error if stack full
-    void push(const T& item)
-    {
-        if(top == S) throw FullStackError();
-        store[top++] = item;
-    }
-
-    // void pop() Removes item at top of the stack or throws error if stack empty
+    bool empty() { return head == nullptr; }
+    
+    void push(const T& item) { head = new Node<T>{item, head}; }
+    
     void pop()
     {
-        if(empty()) throw EmptyStackError();
-        --top;
+        if (empty()) throw std::runtime_error("invalid pop operation on empty stack");
+        Node<T>* tmp{head};
+        head = head->next;
+        delete tmp;
     }
 
-    // T peek() Returns item at top of stack or throws error if stack empty
-    T peek() 
-    { 
-        if(empty()) throw EmptyStackError();
-        return store[top - 1]; 
+    T peek()
+    {
+        if (empty()) throw std::runtime_error("invalid peek on empty stack");
+        return head->item;
     }
-    
+
+    std::string getString()
+    {
+        std::stringstream str;
+        Node<T>* ptr{head};
+
+        while (ptr != nullptr)
+        {
+            str << ptr->item << " ";
+            ptr = ptr->next;
+        }
+
+        return str.str();
+    }
+
 private:
-    T store[S];
-    size_t top{0};
-};
+    Node<T>* head{nullptr};
+}; // end stack
 
 #endif

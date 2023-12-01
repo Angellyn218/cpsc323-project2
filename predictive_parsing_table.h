@@ -8,10 +8,11 @@
 #define COLS_KEY const std::string&
 #define ROWS_KEY const std::string&
 #define VALUE_SYMBOL const std::string&
+#define PARSE_MAP std::map<std::pair<COLS_KEY,ROWS_KEY>,VALUE_SYMBOL>
 
 struct KeyDoesNotExist : public std::runtime_error
 {
-    KeyDoesNotExist() : std::runtime_error("given key does not exist in parse table") {}
+    KeyDoesNotExist() : std::runtime_error("given key(s) does not exist in parse table") {}
     KeyDoesNotExist(const std::string& msg) : std::runtime_error(msg) {}
 };
 
@@ -42,16 +43,15 @@ public:
     PredictiveParsingTable(
         const size_t rows, 
         const size_t cols,
-        const std::vector<const std::string>& stringList) 
+        const std::vector<const std::string&>& stringList) 
         : rows{rows}, cols{cols}
     {
-        createMaps();
+        createMap();
         implementParseTable(stringList);
     }
 
     ~PredictiveParsingTable() {
-        delete keyRow_keyCol;
-        delete keyCol_symbolVal;
+        delete parse_map;
     }
 
     /**
@@ -62,9 +62,8 @@ public:
      * @return String symbol at given column and row
     */
     VALUE_SYMBOL getSymbolAt(const std::string& col_key, const std::string& row_key) const {
-        
         try {
-
+            return parse_map->at(std::make_pair(col_key, row_key));
         } 
         catch (...) {
             throw KeyDoesNotExist();
@@ -74,27 +73,27 @@ public:
 private:
     size_t rows;
     size_t cols;
-    std::map<const std::string&, const std::string&>* keyRow_keyCol;
-    std::map<const std::string&, const std::string&>* keyCol_symbolVal;
+    std::map<std::pair<COLS_KEY,ROWS_KEY>,VALUE_SYMBOL>* parse_map;
 
-    void createMaps() {
-        keyRow_keyCol = new std::map<COLS_KEY, ROWS_KEY>;
-        keyCol_symbolVal = new std::map<ROWS_KEY, VALUE_SYMBOL>;
+    void createMap() {
+        parse_map = new PARSE_MAP;
     }
 
-    void implementParseTable(const std::vector<const std::string>& stringList) {
+    void implementParseTable(const std::vector<const std::string&>& stringList) {
         if (stringList.size() > ((rows * cols)-1))
             throw TooManyStringObjectsError();
 
         if (stringList.size() < ((rows * cols)-1))
             throw TooLittleStringObjectsError();
 
-        for (size_t c = 0; c < cols-1; ++c) {
-            for (size_t r = 0; r < rows-1; ++r) {
-                if (c == 0 && r == 0) continue;
-
-                keyRow_keyCol->insert(std::pair<COLS_KEY,ROWS_KEY>(stringList[0],stringList[0]));
-                keyCol_symbolVal->insert(std::pair<ROWS_KEY,VALUE_SYMBOL>(stringList[0],stringList[0]));
+        for (size_t r = 1; r < rows; ++r) {
+            for (size_t c = 1; c < cols; ++c) {
+            parse_map->insert(std::make_pair(
+                std::make_pair(
+                    stringList[c], 
+                    stringList[r * cols - 1]), 
+                stringList[r * cols - 1 + c])
+            );
             }
         }
     }

@@ -25,11 +25,13 @@ int main()
     std::string inputStr2 = "a*(a/a)$";
     std::string inputStr3 = "a(a+a)$";
     
-    std::cout << "==================== PROBLEM 1 ====================" << std::endl;
+    std::cout << "==================== PROBLEM 1 ====================";
     stackImplementationParse(parseTable, inputStr1);
-    std::cout << "==================== PROBLEM 2 ====================" << std::endl;
+
+    std::cout << "\n==================== PROBLEM 2 ====================";
     stackImplementationParse(parseTable, inputStr2);
-    std::cout << "==================== PROBLEM 3 ====================" << std::endl;
+    
+    std::cout << "\n==================== PROBLEM 3 ====================" ;
     stackImplementationParse(parseTable, inputStr3);
 
     // free allocated memory
@@ -39,40 +41,40 @@ int main()
 }
 
 void stackImplementationParse(const PredictiveParsingTable* parseTable, std::string inputStr) {
-    // stack object that holds char types
-    Stack<const char>* charStack{new Stack<const char>};
+    Stack<const char>* charStack{new Stack<const char>}; // stack object that holds char types
 
-    const char startSymbol{parseTable->getStartSymbol()[0]};
+    const char startSymbol{parseTable->getStartSymbol()[0]}; // start symbol
 
-    std::string topOfStack;
-    std::string firstLetterInput;
-    std::string parseSymbol;
+    std::string topOfStack; // var for tracking top of stack
+    std::string firstCharInput; // var for tracking first char of input
+    std::string parseSymbol; // var for tracking parse table symbol of (topOfStack, firstCharInput)
 
     // required starting operations
-    charStack->push('$');
+    charStack->push('$'); // push $ to stack
     std::cout << "\nInput: " << inputStr << std::endl;
     std::cout << "Stack: " << "[" << reverseStr(charStack->getString()) << " ]" << std::endl;
 
+    charStack->push(startSymbol); // push START SYMBOL to stack
     std::cout << "\nInput: " << inputStr << std::endl;
-    charStack->push(startSymbol);
     std::cout << "Stack: " << "[" << reverseStr(charStack->getString()) << " ]" << std::endl;
     // end required starting operations
 
+    // while top of stack does not equal $
     while (charStack->peek() != '$') {
-        topOfStack = charStack->peek();
-        firstLetterInput = inputStr[0];
+        topOfStack = charStack->peek(); // update topOfStack
+        firstCharInput = inputStr[0]; // update firstCharInput
 
-        if (firstLetterInput == topOfStack) { // top of stack DOES match first char of input
+        if (firstCharInput == topOfStack) { // top of stack DOES match first char of input
             charStack->pop();
-
-            inputStr = inputStr.substr(1,inputStr.length());
+            inputStr = inputStr.substr(1,inputStr.length()); // remove first char of inputStr
         }
         else { // top of stack DOES NOT match first char of input
             charStack->pop();
+            parseSymbol = parseTable->getSymbolAt(firstCharInput, topOfStack); // refer to parse table to get relevant production rule
 
-            parseSymbol = parseTable->getSymbolAt(firstLetterInput, topOfStack);
-    
+            // EPSILON means nothing, so if we get EPSILON production rule then do not push anything
             if (parseSymbol[0] != EPSILON[0]) {
+                // push production rule onto stack in reverse order
                 for (char c : reverseStr(parseSymbol)) {
                     charStack->push(c);
                 }
@@ -82,6 +84,7 @@ void stackImplementationParse(const PredictiveParsingTable* parseTable, std::str
         std::cout << "Stack: " << "[" << reverseStr(charStack->getString()) << " ]" << std::endl;
     }
 
+    // if both the stack and input str are reduced to both only having $ then the string is accepted, otherwise the string is invalid
     if (charStack->peek() == '$' && inputStr[0] == '$')
         std::cout << "Output: String is accepted/valid." << std::endl;
     else
